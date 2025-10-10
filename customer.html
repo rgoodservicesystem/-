@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Customer Portal — ติดตามการขึ้นทะเบียน</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f6fbff; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --border:#e6eef5;
+    --accent:#0ea5a5; --accent-2:#60a5fa;
+    --ok:#0f766e;   --ok-bg:#ecfdf5;
+    --warn:#92400e; --warn-bg:#fff7ed;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:"Prompt",ui-sans-serif,system-ui; color:var(--ink); background:
+    radial-gradient(1200px 600px at 10% -10%, #e6f7ff 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 0%, #e8fff6 0%, transparent 60%),
+    var(--bg);}
+  header{padding:20px 16px; background:linear-gradient(180deg,#f0fbff,#eaf7ff); border-bottom:1px solid var(--border);}
+  .brand{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px;font-weight:700;font-size:20px}
+  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+  .container{max-width:1100px;margin:20px auto; padding:0 16px 28px;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 4px 20px rgba(10,30,60,.06); padding:18px; margin-bottom:16px;}
+  label{display:block; margin:6px 0 8px; color:var(--muted); font-size:14px;}
+  select, input, button{
+    padding:11px 12px; font-size:15px; border:1px solid var(--border); border-radius:10px; outline:none; background:white;
+  }
+  .btn{cursor:pointer}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; border:none}
+  table{width:100%; border-collapse:collapse; background:white; border-radius:12px; overflow:hidden}
+  th,td{padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top}
+  th{background:linear-gradient(180deg,#f7fbff,#f2f8ff); color:#0b3a4f; font-weight:600;}
+  .hint{color:var(--muted); font-size:13px}
+  .check-ok{ color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:4px 10px; border-radius:10px; display:inline-block; font-size:12px; font-weight:600}
+  .check-warn{ color:#92400e; background:#fff7ed; border:1px solid #fde68a; padding:4px 10px; border-radius:10px; display:inline-block; font-size:12px; font-weight:600}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div>Customer Portal — ติดตามการขึ้นทะเบียน</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <label><strong>🔍 ค้นหาข้อมูลของท่าน</strong></label>
+    <div class="row" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input id="custCodeInput" placeholder="กรอกรหัสลูกค้า เช่น RG-1234" style="flex:1;min-width:260px">
+      <button id="searchBtn" class="btn btn-primary">ค้นหา</button>
+    </div>
+    <div id="msg" class="hint" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card" style="overflow:auto;">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>ชื่อการค้า</th>
+          <th>ชื่อสามัญ/สูตร</th>
+          <th>วันที่ขึ้นทะเบียน</th>
+          <th>ขั้นตอน</th>
+          <th>หมายเหตุ</th>
+          <th>สถานะ</th>
+          <th>ตรวจเช็ก</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="7" style="color:var(--muted)">กรุณากรอกรหัสลูกค้าของท่านเพื่อดูข้อมูล</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://phwigdhupzunbkywgxiq.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBod2lnZGh1cHp1bmJreXdneGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTk2NjgsImV4cCI6MjA3NTU5NTY2OH0.5mWxBvX_VTZIpUOJiOvNAj-Vh1XEH4SNvbpk3YGuOEA";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+/* แปลงวันที่เป็น พ.ศ. */
+function fmtDateTH(d){
+  if(!d) return '-';
+  const t = new Date(d);
+  if(isNaN(t)) return '-';
+  const year = t.getFullYear() + 543;
+  const monthNames = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+                      "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+  return `${t.getDate()} ${monthNames[t.getMonth()]} ${year}`;
+}
+
+const STAGES = [
+  ['received','รับเรื่องแล้ว'],
+  ['doc_check','ตรวจเอกสารเบื้องต้น'],
+  ['submitted','ยื่นหน่วยงานรัฐ'],
+  ['pending_agency','รอผลหน่วยงานรัฐ'],
+  ['approved','อนุมัติแล้ว'],
+  ['rejected','ตีกลับ/แก้ไข']
+];
+const stageLabel = v => (STAGES.find(s=>s[0]===v)?.[1] || '-');
+
+function buildChecklist(r){
+  const miss=[];
+  if(!r.registration_no) miss.push('ขาดทะเบียน');
+  if(!r.license_no) miss.push('ขาดใบอนุญาต');
+  if(!r.expiry_date) miss.push('ยังไม่ใส่วันที่ขึ้นทะเบียน');
+  if(!r.stage) miss.push('ยังไม่เลือกขั้นตอน');
+  return miss.length===0 ? `<span class="check-ok">ครบถ้วน ✓</span>`
+                         : `<span class="check-warn">${miss.join(' • ')}</span>`;
+}
+
+$('searchBtn').addEventListener('click', loadData);
+$('custCodeInput').addEventListener('keydown', e => { if(e.key==='Enter') loadData(); });
+
+async function loadData(){
+  const code = $('custCodeInput').value.trim();
+  if(!code) return $('msg').textContent='⚠️ กรุณากรอกรหัสลูกค้าก่อนค้นหา';
+  $('msg').textContent='⏳ กำลังโหลดข้อมูล...';
+  $('tbody').innerHTML=`<tr><td colspan="7" style="color:var(--muted)">กำลังโหลด...</td></tr>`;
+
+  try{
+    // เรียก RPC เพื่อดึงชื่อบริษัท
+    const nameRes = await sb.rpc('get_company_name_by_code', { p_plain_code: code });
+    if(nameRes.error || !nameRes.data){
+      $('msg').textContent = '❌ ไม่พบข้อมูลรหัสนี้ หรือยังไม่เปิดใช้งาน';
+      $('tbody').innerHTML=`<tr><td colspan="7" style="color:var(--muted)">ไม่พบข้อมูล</td></tr>`;
+      return;
+    }
+    const company = nameRes.data;
+    $('msg').textContent=`✅ แสดงข้อมูลของบริษัท ${company}`;
+
+    // เรียก RPC เพื่อดึงรายการสินค้าของบริษัท
+    const res = await sb.rpc('get_company_portal', { p_plain_code: code });
+    if(res.error){ throw res.error; }
+    renderTable(res.data || []);
+  }catch(err){
+    console.error(err);
+    $('msg').textContent = '⚠️ เกิดข้อผิดพลาด: ' + (err?.message||err);
+  }
+}
+
+function renderTable(rows){
+  const tb=$('tbody');
+  if(!rows.length){
+    tb.innerHTML=`<tr><td colspan="7" style="color:var(--muted)">ไม่พบข้อมูลการขึ้นทะเบียน</td></tr>`;
+    return;
+  }
+  tb.innerHTML = rows.map(r=>`
+    <tr>
+      <td>${r.brand_name||'-'}</td>
+      <td>${r.common_label||'-'}</td>
+      <td>${fmtDateTH(r.expiry_date)}</td>
+      <td>${stageLabel(r.stage)}</td>
+      <td>${r.note||'-'}</td>
+      <td>${r.custom_status||'-'}</td>
+      <td>${buildChecklist(r)}</td>
+    </tr>`).join('');
+}
+</script>
+
+</body>
+</html>
