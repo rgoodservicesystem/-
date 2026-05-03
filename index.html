@@ -1,142 +1,722 @@
 <!DOCTYPE html>
+
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Company Portal — Smart Entry</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{
-      --bg1:#06b6d4; --bg2:#10b981; --ink:#0f172a; --mut:#64748b;
-      --card:#ffffff; --radius:20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R.GOOD SERVICE — Premium Agricultural Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Prompt:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0A0A;
+            --ivory: #F7F4EE;
+            --gold: #C9A84C;
+            --gold-light: #E8D08A;
+            --gold-dark: #8B6914;
+            --white: #FFFFFF;
+            --muted: rgba(10,10,10,0.45);
+            --border: rgba(10,10,10,0.09);
+        }
+
+```
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'Prompt', sans-serif;
+        background: var(--ivory);
+        color: var(--ink);
+        overflow-x: hidden;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:"Prompt",sans-serif; color:var(--ink);
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      min-height:100vh; display:flex; align-items:center; justify-content:center;
+
+    /* ═══════════════════════════════════
+       NOISE TEXTURE OVERLAY
+    ═══════════════════════════════════ */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+        background-size: 200px;
+        pointer-events: none;
+        z-index: 9999;
+        mix-blend-mode: multiply;
     }
-    .container{
-      width:100%; max-width:460px; background:var(--card); border-radius:var(--radius);
-      padding:36px 28px; box-shadow:0 10px 40px rgba(0,0,0,.12); text-align:center;
+
+    /* ═══════════════════════════════════
+       HEADER BAR
+    ═══════════════════════════════════ */
+    .top-bar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 64px;
+        background: rgba(247, 244, 238, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5%;
+        z-index: 100;
     }
-    h1{margin:0 0 8px; font-size:28px}
-    p{margin:0 0 22px; color:var(--mut)}
-    .btn{
-      display:block; width:100%; padding:14px; margin:10px 0; border:none; border-radius:12px;
-      font-weight:700; font-size:16px; color:#fff; cursor:pointer; text-decoration:none;
-      background:linear-gradient(135deg,#0ea5e9,#10b981); transition:.2s;
+
+    .logo-mark {
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
-    .btn:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.15)}
-    .btn.admin{background:linear-gradient(135deg,#8b5cf6,#ec4899)}
-    .btn.admin:hover{box-shadow:0 4px 12px rgba(0,0,0,.2)}
-    footer{margin-top:18px; font-size:12px; color:#94a3b8}
-    .hide{display:none}
-    .spinner{display:inline-block; width:18px; height:18px; border:3px solid #e5e7eb; border-top-color:#0ea5e9; border-radius:50%; animation:spin 1s linear infinite; vertical-align:-3px; margin-right:8px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
+
+    .logo-emblem {
+        width: 38px;
+        height: 38px;
+        background: var(--ink);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .logo-emblem::after {
+        content: '';
+        position: absolute;
+        inset: 2px;
+        border: 1.5px solid var(--gold);
+        border-radius: 5px;
+        opacity: 0.6;
+    }
+
+    .logo-rg {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--gold);
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    .logo-name {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .logo-name strong {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .logo-name span {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        font-weight: 300;
+    }
+
+    .top-contact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 300;
+    }
+
+    .top-contact a {
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .top-contact a:hover { color: var(--gold-dark); }
+
+    /* ═══════════════════════════════════
+       HERO SECTION
+    ═══════════════════════════════════ */
+    .hero {
+        min-height: 100vh;
+        padding: 64px 5% 0;
+        display: grid;
+        grid-template-columns: 1fr 480px;
+        gap: 0;
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    /* Left editorial strip */
+    .hero-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 80px 80px 20px;
+        position: relative;
+    }
+
+    .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .eyebrow-line {
+        width: 40px;
+        height: 1px;
+        background: var(--gold);
+    }
+
+    .eyebrow span {
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gold-dark);
+        font-weight: 400;
+    }
+
+    .main-headline {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(62px, 7vw, 105px);
+        line-height: 0.95;
+        font-weight: 300;
+        margin-bottom: 20px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 0.9s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .main-headline em {
+        font-style: italic;
+        color: var(--gold-dark);
+    }
+
+    .sub-headline {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(36px, 4vw, 58px);
+        font-weight: 300;
+        color: var(--muted);
+        margin-bottom: 50px;
+        line-height: 1.1;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 0.9s 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .divider-ornament {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .divider-ornament::before,
+    .divider-ornament::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, var(--border));
+    }
+
+    .divider-ornament::before {
+        background: linear-gradient(to left, transparent, var(--border));
+    }
+
+    .ornament-diamond {
+        width: 6px;
+        height: 6px;
+        background: var(--gold);
+        transform: rotate(45deg);
+        flex-shrink: 0;
+    }
+
+    .tagline {
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 1.85;
+        color: var(--muted);
+        max-width: 520px;
+        margin-bottom: 55px;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        display: flex;
+        gap: 50px;
+        opacity: 0;
+        animation: fadeUp 0.7s 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .stat-item {}
+
+    .stat-number {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 46px;
+        font-weight: 300;
+        line-height: 1;
+        color: var(--ink);
+    }
+
+    .stat-number span {
+        font-size: 22px;
+        color: var(--gold-dark);
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-top: 5px;
+        font-weight: 300;
+    }
+
+    /* Vertical dividers between stats */
+    .stat-divider {
+        width: 1px;
+        background: var(--border);
+        align-self: stretch;
+    }
+
+    /* ═══════════════════════════════════
+       RIGHT PANEL — MENU CARD
+    ═══════════════════════════════════ */
+    .hero-right {
+        border-left: 1px solid var(--border);
+        padding: 100px 50px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: rgba(255,255,255,0.6);
+        opacity: 0;
+        animation: fadeIn 1s 0.7s ease forwards;
+    }
+
+    .card-label {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gold-dark);
+        margin-bottom: 8px;
+        font-weight: 400;
+    }
+
+    .card-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 32px;
+        font-weight: 300;
+        color: var(--ink);
+        margin-bottom: 35px;
+        line-height: 1.2;
+    }
+
+    /* Service Buttons */
+    .service-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .svc-btn {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 22px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .svc-btn::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--gold);
+        transform: scaleY(0);
+        transform-origin: center;
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .svc-btn:hover {
+        border-color: rgba(201, 168, 76, 0.35);
+        background: var(--ivory);
+        transform: translateX(4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    }
+
+    .svc-btn:hover::before { transform: scaleY(1); }
+
+    .svc-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--ivory);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+        transition: background 0.3s;
+        border: 1px solid var(--border);
+    }
+
+    .svc-btn:hover .svc-icon {
+        background: var(--gold);
+        border-color: var(--gold);
+    }
+
+    .svc-text { flex: 1; }
+
+    .svc-title {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+        margin-bottom: 2px;
+    }
+
+    .svc-sub {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 300;
+        letter-spacing: 0.5px;
+    }
+
+    .svc-arrow {
+        font-size: 14px;
+        color: var(--muted);
+        transition: all 0.3s;
+        opacity: 0;
+    }
+
+    .svc-btn:hover .svc-arrow {
+        opacity: 1;
+        color: var(--gold-dark);
+        transform: translateX(3px);
+    }
+
+    /* Contact strip */
+    .contact-strip {
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+    }
+
+    .contact-strip-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 14px;
+        font-weight: 300;
+    }
+
+    .contact-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 13.5px;
+        font-weight: 400;
+        padding: 8px 10px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+
+    .contact-item:hover { background: rgba(201,168,76,0.08); }
+
+    .contact-item .c-icon {
+        font-size: 14px;
+        width: 28px;
+        text-align: center;
+    }
+
+    /* ═══════════════════════════════════
+       DECORATIVE ELEMENTS
+    ═══════════════════════════════════ */
+    /* Large background typographic element */
+    .bg-wordmark {
+        position: absolute;
+        bottom: 60px;
+        left: 15px;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 200px;
+        font-weight: 300;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(10,10,10,0.05);
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+        letter-spacing: -5px;
+    }
+
+    /* ═══════════════════════════════════
+       TRUST BAND
+    ═══════════════════════════════════ */
+    .trust-band {
+        background: var(--ink);
+        padding: 28px 5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .trust-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 50px;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        flex: 1;
+        justify-content: center;
+    }
+
+    .trust-item:last-child { border-right: none; }
+
+    .trust-dot {
+        width: 5px;
+        height: 5px;
+        background: var(--gold);
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .trust-text {
+        font-size: 12px;
+        color: rgba(255,255,255,0.55);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 300;
+    }
+
+    /* ═══════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════ */
+    @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width: 1100px) {
+        .hero {
+            grid-template-columns: 1fr;
+            max-width: 640px;
+        }
+
+        .hero-left {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .eyebrow, .stats-row { justify-content: center; }
+        .tagline { margin: 0 auto 55px; }
+
+        .bg-wordmark { display: none; }
+
+        .hero-right {
+            border-left: none;
+            border-top: 1px solid var(--border);
+            padding: 50px 20px 60px;
+        }
+
+        .trust-band { flex-wrap: wrap; gap: 15px; }
+        .trust-item { border-right: none; padding: 5px 20px; flex: auto; }
+    }
+
+    @media (max-width: 600px) {
+        .top-contact { display: none; }
+        .stats-row { gap: 25px; }
+        .stat-number { font-size: 38px; }
+    }
+</style>
+```
+
 </head>
 <body>
-  <div class="container">
-    <div id="loadingBox">
-      <h1>🏢 Company Portal</h1>
-      <p><span class="spinner"></span>กำลังตรวจสอบสถานะการเข้าสู่ระบบ…</p>
-      <p id="hint" class="hide" style="margin-top:8px;">ถ้าค้างนาน ลองรีเฟรชหน้าอีกครั้ง</p>
+
+```
+<!-- ═══ TOP BAR ═══ -->
+<header class="top-bar">
+    <div class="logo-mark">
+        <div class="logo-emblem">
+            <span class="logo-rg">RG</span>
+        </div>
+        <div class="logo-name">
+            <strong>R.GOOD SERVICE</strong>
+            <span>Agricultural Registration</span>
+        </div>
     </div>
-
-    <div id="choiceBox" class="hide">
-      <h1>🏢 Company Portal</h1>
-      <p>เลือกโหมดที่คุณต้องการเข้าสู่ระบบ</p>
-      <a href="customer.html" class="btn">🔓 สำหรับลูกค้า (Customer)</a>
-      <a href="admin_login.html" class="btn admin">🔐 สำหรับผู้ดูแล (Admin)</a>
-      <footer>© 2025 Company Portal — Powered by Supabase</footer>
+    <div class="top-contact">
+        <span>สอบถามได้เลย</span>
+        <a href="tel:0843752399">☎ 084-375-2399</a>
     </div>
-  </div>
-<script>
-if (location.pathname.endsWith('/') || location.pathname.endsWith('/index.html')) {
-  console.log("✅ Index page loaded correctly");
-} else {
-  location.href = './index.html';
-}
-</script>
+</header>
 
-  <script>
-    // ------------ ตั้งค่า Supabase (ใช้ anon key) ------------
-    const SUPABASE_URL = "https://phwigdhupzunbkywgxiq.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBod2lnZGh1cHp1bmJreXdneGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTk2NjgsImV4cCI6MjA3NTU5NTY2OH0.5mWxBvX_VTZIpUOJiOvNAj-Vh1XEH4SNvbpk3YGuOEA"; // <- ใส่ anon key ของโปรเจกต์
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<!-- ═══ HERO ═══ -->
+<main>
+    <section class="hero">
 
-    const loadingBox = document.getElementById('loadingBox');
-    const choiceBox  = document.getElementById('choiceBox');
-    const hint       = document.getElementById('hint');
+        <!-- Left: Editorial -->
+        <div class="hero-left">
 
-    function showChoice(){
-      loadingBox.classList.add('hide');
-      choiceBox.classList.remove('hide');
-    }
+            <div class="bg-wordmark">RG</div>
 
-    // fallback safety: ถ้าตรวจสอบช้าเกินไป ให้ขึ้นปุ่มเลือก
-    const fallbackTimer = setTimeout(()=>{ hint.classList.remove('hide'); showChoice(); }, 4000);
+            <div class="eyebrow">
+                <div class="eyebrow-line"></div>
+                <span>Premium Agricultural Solutions · Est. 25+ Years</span>
+            </div>
 
-    async function smartRoute(){
-      // ถ้าบังคับโชว์ปุ่มด้วย query (?force=choice=1) ก็ไม่ redirect อัตโนมัติ
-      const params = new URLSearchParams(location.search);
-      if (params.get('force') === 'choice' || params.get('force') === 'choice=1'){
-        clearTimeout(fallbackTimer);
-        showChoice(); 
-        return;
-      }
+            <h1 class="main-headline">
+                R.GOOD<br><em>SERVICE</em>
+            </h1>
 
-      const { data: { user } } = await sb.auth.getUser();
-      if(!user){
-        clearTimeout(fallbackTimer);
-        showChoice();
-        return;
-      }
+            <h2 class="sub-headline">
+                Registration<br>Specialists
+            </h2>
 
-      // มี session แล้ว → ดึงบทบาทจาก company_members
-      const { data, error } = await sb
-        .from('company_members')
-        .select('role')
-        .eq('user_id', user.id);
+            <div class="divider-ornament">
+                <div class="ornament-diamond"></div>
+            </div>
 
-      clearTimeout(fallbackTimer);
+            <p class="tagline">
+                ยกระดับมาตรฐานการขึ้นทะเบียนสารเคมีทางการเกษตร ด้วยความเชี่ยวชาญกว่า 25 ปี
+                เราเป็นที่ปรึกษาที่ธุรกิจเกษตรไทยวางใจ ถูกต้องตามกฎหมาย รวดเร็ว และครบวงจร
+            </p>
 
-      if(error){
-        // ดึง role ไม่ได้ → ให้ผู้ใช้เลือกเอง
-        showChoice();
-        return;
-      }
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number">25<span>+</span></div>
+                    <div class="stat-label">ปีประสบการณ์</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number">1K<span>+</span></div>
+                    <div class="stat-label">ทะเบียนสำเร็จ</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number">100<span>%</span></div>
+                    <div class="stat-label">ถูกกฎหมาย</div>
+                </div>
+            </div>
 
-      if(!data || data.length === 0){
-        // ไม่มี mapping → ให้เลือกเอง
-        showChoice();
-        return;
-      }
+        </div>
 
-      // ถ้ามีหลายแถว ให้ admin ชนะความสำคัญ
-      const roles = data.map(r => (r.role || '').toLowerCase());
-      if (roles.includes('admin')) {
-        window.location.href = 'admin.html';
-        return;
-      }
-      if (roles.includes('staff')) {
-        // ถ้าคุณมีหน้า staff แยก ให้เปลี่ยนปลายทางได้ เช่น 'staff.html'
-        // ตอนนี้ให้เข้า admin.html ไปก่อน หรือจะแก้เป็น customer.html ก็ได้
-        window.location.href = 'admin.html';
-        return;
-      }
-      // ค่าเริ่มต้น → ลูกค้า
-      window.location.href = 'customer.html';
-    }
+        <!-- Right: Services -->
+        <div class="hero-right">
+            <p class="card-label">Portal & Services</p>
+            <h3 class="card-title">เลือกบริการ<br>ที่ต้องการ</h3>
 
-    document.addEventListener('DOMContentLoaded', smartRoute);
+            <div class="service-list">
+                <a href="https://serviceagriculture.github.io/R.Good-SERVICE-REGISTRATION/" target="_blank" class="svc-btn">
+                    <div class="svc-icon">🌐</div>
+                    <div class="svc-text">
+                        <span class="svc-title">หน้าแรกเว็บไซต์</span>
+                        <span class="svc-sub">Official Portal & Services</span>
+                    </div>
+                    <span class="svc-arrow">→</span>
+                </a>
 
-    // ถ้ามีการเปลี่ยนสถานะ auth กลางหน้า ให้ลอง route ใหม่
-    sb.auth.onAuthStateChange((_event, _session) => {
-      smartRoute();
-    });
-  </script>
+                <a href="https://rgoodservicesystem.github.io/registration-for-customer/customer.html" target="_blank" class="svc-btn">
+                    <div class="svc-icon">📋</div>
+                    <div class="svc-text">
+                        <span class="svc-title">ตรวจสอบใบสำคัญการขึ้นทะเบียน</span>
+                        <span class="svc-sub">Registration Certificate Verification</span>
+                    </div>
+                    <span class="svc-arrow">→</span>
+                </a>
+
+                <a href="https://rgoodservice.github.io/LOGIN-CUSTOMER/customer.html" target="_blank" class="svc-btn">
+                    <div class="svc-icon">📄</div>
+                    <div class="svc-text">
+                        <span class="svc-title">ตรวจสอบใบอนุญาตผลิต</span>
+                        <span class="svc-sub">Agri-Hazardous License Check</span>
+                    </div>
+                    <span class="svc-arrow">→</span>
+                </a>
+
+                <a href="https://rgoodservicesystem.github.io/process-customer-by-R.good/customer.html" target="_blank" class="svc-btn">
+                    <div class="svc-icon">⚙️</div>
+                    <div class="svc-text">
+                        <span class="svc-title">งานที่กำลังดำเนินการขึ้นทะเบียน</span>
+                        <span class="svc-sub">Registration In Progress</span>
+                    </div>
+                    <span class="svc-arrow">→</span>
+                </a>
+            </div>
+
+            <div class="contact-strip">
+                <p class="contact-strip-label">ติดต่อโดยตรง</p>
+                <div class="contact-items">
+                    <a href="tel:0843752399" class="contact-item">
+                        <span class="c-icon">☎</span>
+                        084-375-2399
+                    </a>
+                    <a href="mailto:parungrung24@gmail.com" class="contact-item">
+                        <span class="c-icon">✉</span>
+                        parungrung24@gmail.com
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<!-- ═══ TRUST BAND ═══ -->
+<div class="trust-band">
+    <div class="trust-item">
+        <div class="trust-dot"></div>
+        <span class="trust-text">ขึ้นทะเบียนกับ อย. & กรมวิชาการเกษตร</span>
+    </div>
+    <div class="trust-item">
+        <div class="trust-dot"></div>
+        <span class="trust-text">ถูกต้องตามกฎหมาย 100%</span>
+    </div>
+    <div class="trust-item">
+        <div class="trust-dot"></div>
+        <span class="trust-text">บริการครบวงจร End-to-End</span>
+    </div>
+    <div class="trust-item">
+        <div class="trust-dot"></div>
+        <span class="trust-text">ที่ปรึกษาส่วนตัวตลอดกระบวนการ</span>
+    </div>
+</div>
+```
+
 </body>
 </html>
